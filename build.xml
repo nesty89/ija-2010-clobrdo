@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+  <property name="lib" value="lib" />
+  <property name="dest" value="dest-client" />
+  <property name="dests" value="dest-server" />
+
+  <path id="myclasspath">
+    <pathelement path="${classpath}"/>
+    <fileset dir="${lib}" includes="*.jar"/>
+  </path>
+
+
+  <target name="client" depends="compile">
+    <java jar="dest-client/ija2011-client.jar" fork="true" dir="${dest}" classpath="${dest}"/>
+  </target>
+
+
+  <target name="server">
+    <java jar="dest-server/ija2011-server.jar" fork="true" dir="${dests}" classpath="${dests}"/>
+  </target>
+
+
+  <target name="compile">
+    <delete dir="build"/>
+    <delete dir="images"/>
+    <delete dir="doc"/>
+    <mkdir dir="doc"/>
+
+    <javadoc destdir="doc" encoding="UTF-8" sourcepath="src">
+        <packageset dir="src" defaultexcludes="yes">
+            <include name="**"/>
+        </packageset>
+    </javadoc>
+    <mkdir dir="build/classes"/>
+    <mkdir dir="images"/>
+
+    <copy todir="dest-client/images/" >
+        <fileset dir="lib/images" includes="**"/>
+    </copy>
+
+    <copy todir="dest-client/" >
+        <fileset file="lib/config.xml"/>
+    </copy>
+	
+	<copy todir="dest-server/" >
+        <fileset file="lib/config.xml"/>
+    </copy>
+	
+    <mkdir dir="dest-client/help"/>
+
+    <copy todir="dest-client/help" >
+      <fileset dir="lib/help" includes="**"/>
+    </copy>
+    <mkdir dir="dest-client/examples"/>
+
+    <copy todir="dest-client/examples" >
+      <fileset dir="examples" includes="**"/>
+    </copy>
+
+    <javac srcdir="src" destdir="build/classes/" encoding="UTF-8">
+      <classpath refid="myclasspath" />
+    </javac>
+
+    <jar destfile="dest-client/ija2011-client.jar" basedir="build/classes/">
+      <fileset dir="build" />
+      <zipgroupfileset dir="${lib}" includes="*.jar" />
+      <manifest>
+        <attribute name="Main-Class" value="projekt/client/Main"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="dest-server/ija2011-server.jar" basedir="build/classes/">
+      <manifest>
+        <attribute name="Main-Class" value="projekt/server/Court"/>
+      </manifest>
+    </jar>
+  </target>
+  <target name="clean">
+    <delete dir="build"/>
+	<delete dir="images"/>
+	<delete file="config.xml"/>
+  </target>
+</project>
